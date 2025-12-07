@@ -55,7 +55,9 @@
 		97C455012EE558770036C500 /* Exceptions for "Pawmodoro" folder in "PawmodoroWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Assets.xcassets,
 				Data/Pet.swift,
+				Shared/AnimatedPixelPet.swift,
 				Shared/CustomTimer.swift,
 				Shared/FocusAttributes.swift,
 				Shared/UserProgress.swift,

@@ -19,21 +19,18 @@ struct PawmodoroWidgetLiveActivity: Widget {
             // 1. VUE ÉCRAN DE VERROUILLAGE (Lock Screen)
             // C'est la bannière qui apparaît en bas de l'écran verrouillé
             HStack {
-                // Image du chat (interpolation.none pour garder le pixel art net)
-                Image("\(context.attributes.petName)_work")
-                   .resizable()
-                   .interpolation(.none) // CRUCIAL pour le pixel art!
-                   .scaledToFit()
+                // Chat animé qui bouge !
+                AnimatedPixelPet(baseName: "cat_work_", frameCount: 4, animationSpeed: 0.5)
                    .frame(width: 50, height: 50)
                 
-                VStack(alignment:.leading) {
+                VStack(alignment: .leading) {
                     Text("Focus en cours")
                        .font(.headline)
                        .foregroundStyle(.white)
                     
                     // Le timer magique d'Apple qui se met à jour tout seul
                     Text(timerInterval: Date()...context.state.endTime, countsDown: true)
-                       .font(.system(.body, design:.monospaced))
+                       .font(.system(.body, design: .monospaced))
                        .foregroundStyle(.yellow)
                 }
                 Spacer()
@@ -47,13 +44,11 @@ struct PawmodoroWidgetLiveActivity: Widget {
             DynamicIsland {
                 
                 // A. VUE ÉTENDUE (Appui long)
-                // On a plus de place, on affiche le chat en grand et le temps
                 DynamicIslandExpandedRegion(.leading) {
-                    HStack {
-                        Image("\(context.attributes.petName)_work")
-                           .resizable()
-                           .interpolation(.none)
-                           .frame(width: 40, height: 40)
+                    VStack(spacing: 4) {
+                        AnimatedPixelPet(baseName: "cat_work_", frameCount: 4, animationSpeed: 0.5)
+                           .frame(width: 60, height: 60)
+                        
                         Text("Focus")
                            .font(.caption)
                            .foregroundStyle(.secondary)
@@ -61,30 +56,37 @@ struct PawmodoroWidgetLiveActivity: Widget {
                 }
                 
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text(timerInterval: Date()...context.state.endTime, countsDown: true)
-                       .multilineTextAlignment(.trailing)
-                       .foregroundStyle(.yellow)
-                       .font(.title2)
-                       .monospacedDigit()
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text(timerInterval: Date()...context.state.endTime, countsDown: true)
+                           .multilineTextAlignment(.trailing)
+                           .foregroundStyle(.yellow)
+                           .font(.title2)
+                           .monospacedDigit()
+                        
+                        Text("restant")
+                           .font(.caption2)
+                           .foregroundStyle(.secondary)
+                    }
                 }
                 
                 DynamicIslandExpandedRegion(.bottom) {
-                    // Ici on pourrait mettre une barre de progression ou un bouton "Stop"
-                    Text("Keep going! 🐾")
-                       .font(.caption)
-                       .foregroundStyle(.white.opacity(0.8))
-                       .padding(.top, 8)
+                    // Message motivant
+                    HStack {
+                        Image(systemName: "flame.fill")
+                           .foregroundStyle(.orange)
+                        Text("Keep going! 🐾")
+                           .font(.caption)
+                    }
+                    .foregroundStyle(.white.opacity(0.8))
+                    .padding(.top, 8)
                 }
                 
             } compactLeading: {
                 
                 // B. VUE COMPACTE GAUCHE (Petite pilule)
-                // Juste la tête du chat
-                Image("\(context.attributes.petName)_work")
-                   .resizable()
-                   .interpolation(.none)
-                   .scaledToFit()
-                   .frame(width: 24, height: 24)
+                // Chat animé miniature
+                AnimatedPixelPet(baseName: "cat_work_", frameCount: 4, animationSpeed: 0.5)
+                   .frame(width: 25, height: 25)
                 
             } compactTrailing: {
                 
@@ -94,13 +96,13 @@ struct PawmodoroWidgetLiveActivity: Widget {
                    .monospacedDigit()
                    .font(.caption2)
                    .foregroundStyle(.yellow)
-                   .frame(width: 40) // Fixe la largeur pour éviter que ça "saute"
+                   .frame(width: 40)
                 
             } minimal: {
                 
                 // D. VUE MINIMALE (Si une autre app utilise aussi l'île)
-                Image(systemName: "timer")
-                   .foregroundStyle(.yellow)
+                AnimatedPixelPet(baseName: "cat_work_", frameCount: 4, animationSpeed: 0.5)
+                   .frame(width: 20, height: 20)
             }
         }
     }
