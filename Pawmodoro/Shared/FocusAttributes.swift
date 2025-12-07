@@ -10,14 +10,13 @@ import ActivityKit
 
 struct FocusAttributes: ActivityAttributes {
     
-    /// ContentState contient les données dynamiques qui changent pendant l'activité.
-    /// Pour un timer, on ne stocke PAS le temps restant (ex: "10 min"),
-    /// mais la date de fin précise. Le système calculera le compte à rebours lui-même.
+    // ContentState contient les données dynamiques qui changent pendant l'activité.
+    // On ajoute currentFrame pour l'animation du chat !
     public struct ContentState: Codable, Hashable {
         var endTime: Date
+        var currentFrame: Int // 0, 1, 2, 3 pour l'animation du chat
     }
 
-    /// Les propriétés ici sont statiques (elles ne changent pas une fois le timer lancé).
-    /// On stocke le nom du fichier image de l'animal choisi.
+    // Les propriétés ici sont statiques (elles ne changent pas une fois le timer lancé).
     var petName: String
 }

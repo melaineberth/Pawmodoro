@@ -17,8 +17,12 @@ struct TimerView: View {
     @State private var predefinedTimers = PredefinedTimer.preview()
     @State private var currentActivity: Activity<FocusAttributes>?
     @State private var pets = Pet.preview()
-    @Environment(\.modelContext) var context
     
+    // Timer pour l'animation du chat
+    @State private var animationTimer: Timer?
+    @State private var currentFrame: Int = 0
+    
+    @Environment(\.modelContext) var context
     @Query private var customTimers: [CustomTimer]
     
     
@@ -45,6 +49,10 @@ struct TimerView: View {
         }
         .sheet(isPresented: $showBottomSheet) {
             CreateTimerView()
+        }
+        // Nettoyer le timer quand la vue disparaît
+        .onDisappear {
+            animationTimer?.invalidate()
         }
     }
     
@@ -156,45 +164,52 @@ struct TimerView: View {
     }
     
     func startActivity() {
-        // 1. Définir les données statiques (qui ne changent pas)
+        // 1. Définir les données statiques
         let attributes = FocusAttributes(petName: "cat")
         
-        // 2. Calculer la date de fin exacte
+        // 2. Calculer la date de fin
         let futureDate = Date().addingTimeInterval(Double(selectedMinutes) * 60)
         
-        // 3. Définir l'état initial (ce qui change)
-        let contentState = FocusAttributes.ContentState(endTime: futureDate)
+        // 3. État initial avec la première frame
+        let contentState = FocusAttributes.ContentState(
+            endTime: futureDate,
+            currentFrame: 0 // Commence à la frame 0
+        )
         
-        // 4. Demander à iOS de lancer l'activité
+        // 4. Lancer l'activité
         do {
-            // Mise à jour pour iOS 16.2+ : on encapsule l'état dans ActivityContent
             let content = ActivityContent(state: contentState, staleDate: nil)
             
             let activity = try Activity<FocusAttributes>.request(
                 attributes: attributes,
                 content: content,
-                pushType: nil // Pas de notifications push distantes pour l'instant
+                pushType: nil
             )
             currentActivity = activity
             isFocusing = true
-            print("Activité lancée ID: \(activity.id)")
+            
+            // 5. CRUCIAL : Démarrer le timer d'animation
+            startAnimationTimer()
+            
+            print("✅ Activité lancée ID: \(activity.id)")
         } catch {
-            print("Erreur lors du lancement : \(error.localizedDescription)")
+            print("❌ Erreur lors du lancement : \(error.localizedDescription)")
         }
     }
-    
+
     func stopActivity() {
         guard let activity = currentActivity else { return }
         
-        // On définit l'état final (immédiat)
-        // Note: Ici on pourrait mettre à jour l'état pour dire "Fini!" avant de tuer l'activité
-        let finalState = FocusAttributes.ContentState(endTime: Date())
+        // Arrêter le timer d'animation
+        stopAnimationTimer()
+        
+        // État final
+        let finalState = FocusAttributes.ContentState(
+            endTime: Date(),
+            currentFrame: 0
+        )
         
         Task {
-            // dismissalPolicy:.immediate supprime l'activité tout de suite
-            //.default la laisse sur l'écran verrouillé jusqu'à ce que l'utilisateur l'efface
-            
-            // Correction du warning: on utilise ActivityContent avec end(_:dismissalPolicy:)
             let finalContent = ActivityContent(state: finalState, staleDate: nil)
             await activity.end(finalContent, dismissalPolicy: .default)
             
@@ -202,6 +217,50 @@ struct TimerView: View {
                 self.isFocusing = false
                 self.currentActivity = nil
             }
+        }
+    }
+    
+    // MARK: - Animation du chat
+        
+    // Démarre un timer qui met à jour la frame du chat toutes les 0.5 secondes
+    private func startAnimationTimer() {
+        // Réinitialiser la frame
+        currentFrame = 0
+        
+        // Créer un timer qui se déclenche toutes les 0.5 secondes
+        animationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            // Passer à la frame suivante (0 → 1 → 2 → 3 → 0...)
+            currentFrame = (currentFrame + 1) % 4
+            
+            // Mettre à jour l'activité avec la nouvelle frame
+            updateActivityFrame()
+        }
+    }
+    
+    // Arrête le timer d'animation
+    private func stopAnimationTimer() {
+        animationTimer?.invalidate()
+        animationTimer = nil
+    }
+    
+    // Met à jour l'activité avec la frame actuelle
+    private func updateActivityFrame() {
+        guard let activity = currentActivity else { return }
+        
+        // Créer un nouvel état avec la frame actuelle
+        let updatedState = FocusAttributes.ContentState(
+            endTime: activity.content.state.endTime, // Garder la même date de fin
+            currentFrame: currentFrame // Nouvelle frame
+        )
+        
+        // Mettre à jour l'activité
+        Task {
+            await activity.update(
+                ActivityContent(
+                    state: updatedState,
+                    staleDate: nil
+                )
+            )
         }
     }
 }
