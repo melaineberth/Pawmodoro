@@ -13,22 +13,26 @@ struct PawmodoroWidgetLiveActivity: Widget {
     
     var body: some WidgetConfiguration {
         
-        // On lie la configuration à nos données "FocusAttributes"
         ActivityConfiguration(for: FocusAttributes.self) { context in
             
             // 1. VUE ÉCRAN DE VERROUILLAGE (Lock Screen)
-            // C'est la bannière qui apparaît en bas de l'écran verrouillé
             HStack {
-                // Chat animé qui bouge !
-                AnimatedPixelPet(baseName: "cat_work_", frameCount: 4, animationSpeed: 0.5)
-                   .frame(width: 50, height: 50)
+                // Animation inline du chat - APPROCHE DIRECTE
+                TimelineView(.animation) { timeline in
+                    let frame = computeFrame(date: timeline.date)
+                    
+                    Image("cat_work_\(frame)")
+                       .resizable()
+                       .interpolation(.none)
+                       .scaledToFit()
+                       .frame(width: 50, height: 50)
+                }
                 
                 VStack(alignment: .leading) {
                     Text("Focus en cours")
                        .font(.headline)
                        .foregroundStyle(.white)
                     
-                    // Le timer magique d'Apple qui se met à jour tout seul
                     Text(timerInterval: Date()...context.state.endTime, countsDown: true)
                        .font(.system(.body, design: .monospaced))
                        .foregroundStyle(.yellow)
@@ -40,14 +44,21 @@ struct PawmodoroWidgetLiveActivity: Widget {
             
         } dynamicIsland: { context in
             
-            // 2. CONFIGURATION DYNAMIC ISLAND
             DynamicIsland {
                 
                 // A. VUE ÉTENDUE (Appui long)
                 DynamicIslandExpandedRegion(.leading) {
                     VStack(spacing: 4) {
-                        AnimatedPixelPet(baseName: "cat_work_", frameCount: 4, animationSpeed: 0.5)
-                           .frame(width: 60, height: 60)
+                        // Animation inline pour la vue étendue
+                        TimelineView(.animation) { timeline in
+                            let frame = computeFrame(date: timeline.date)
+                            
+                            Image("cat_work_\(frame)")
+                               .resizable()
+                               .interpolation(.none)
+                               .scaledToFit()
+                               .frame(width: 60, height: 60)
+                        }
                         
                         Text("Focus")
                            .font(.caption)
@@ -70,7 +81,6 @@ struct PawmodoroWidgetLiveActivity: Widget {
                 }
                 
                 DynamicIslandExpandedRegion(.bottom) {
-                    // Message motivant
                     HStack {
                         Image(systemName: "flame.fill")
                            .foregroundStyle(.orange)
@@ -83,15 +93,20 @@ struct PawmodoroWidgetLiveActivity: Widget {
                 
             } compactLeading: {
                 
-                // B. VUE COMPACTE GAUCHE (Petite pilule)
-                // Chat animé miniature
-                AnimatedPixelPet(baseName: "cat_work_", frameCount: 4, animationSpeed: 0.5)
-                   .frame(width: 25, height: 25)
+                // B. VUE COMPACTE GAUCHE
+                TimelineView(.animation) { timeline in
+                    let frame = computeFrame(date: timeline.date)
+                    
+                    Image("cat_work_\(frame)")
+                       .resizable()
+                       .interpolation(.none)
+                       .scaledToFit()
+                       .frame(width: 25, height: 25)
+                }
                 
             } compactTrailing: {
                 
                 // C. VUE COMPACTE DROITE
-                // Le compte à rebours minimaliste
                 Text(timerInterval: Date()...context.state.endTime, countsDown: true)
                    .monospacedDigit()
                    .font(.caption2)
@@ -100,10 +115,31 @@ struct PawmodoroWidgetLiveActivity: Widget {
                 
             } minimal: {
                 
-                // D. VUE MINIMALE (Si une autre app utilise aussi l'île)
-                AnimatedPixelPet(baseName: "cat_work_", frameCount: 4, animationSpeed: 0.5)
-                   .frame(width: 20, height: 20)
+                // D. VUE MINIMALE
+                TimelineView(.animation) { timeline in
+                    let frame = computeFrame(date: timeline.date)
+                    
+                    Image("cat_work_\(frame)")
+                       .resizable()
+                       .interpolation(.none)
+                       .scaledToFit()
+                       .frame(width: 20, height: 20)
+                }
             }
         }
+    }
+    
+    // Fonction PURE pour calculer la frame - CRITIQUE pour que ça marche !
+    // Cette fonction DOIT être déterministe (même date = même résultat)
+    private func computeFrame(date: Date) -> Int {
+        let animationSpeed = 0.5 // Vitesse : change toutes les 0.5 secondes
+        let frameCount = 4 // Nombre total de frames
+        
+        // Calcul basé sur le timestamp absolu (secondes depuis 1970)
+        let totalSeconds = date.timeIntervalSince1970
+        let steppedIndex = Int(totalSeconds / animationSpeed)
+        
+        // Boucle infinie : 0, 1, 2, 3, 0, 1, 2, 3...
+        return steppedIndex % frameCount
     }
 }
