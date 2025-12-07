@@ -12,7 +12,8 @@ import SwiftData
 struct PawmodoroApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            UserProgress.self,
+            CustomTimer.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

@@ -10,57 +10,137 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query private var items: [UserProgress]
+    
+    @State private var searchText: String = ""
+    @State private var expandMiniTimer: Bool = false
+    
+    @Namespace private var animation
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        Group {
+            if #available(iOS 26, *) {
+                NativeTabView()
+                    .tabBarMinimizeBehavior(.onScrollDown)
+                    .tabViewBottomAccessory {
+                        MiniTimerView()
+                            .matchedTransitionSource(id: "MINITIMER", in: animation)
+                            .onTapGesture {
+                                expandMiniTimer.toggle()
+                            }
                     }
-                }
-                .onDelete(perform: deleteItems)
+            } else {
+                NativeTabView()
             }
-#if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+        }
+        .fullScreenCover(isPresented: $expandMiniTimer) {
+            ScrollView {
+                
+            }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                VStack(spacing: 10) {
+                    Capsule()
+                        .fill(.primary.secondary)
+                        .frame(width: 35, height: 3)
+                    
+                    HStack(spacing: 0) {
+                        TimerInfo(.init(width: 80, height: 80))
+                        
+                        Spacer(minLength: 0)
+                        
+                        Group {
+                            Button("", systemImage: "star.circle.fill") {
+                                
+                            }
+                            
+                            Button("", systemImage: "ellipsis.circle.fill") {
+                                
+                            }
+                        }
+                        .font(.title)
+                        .foregroundStyle(Color.primary, Color.primary.opacity(0.1))
                     }
+                    .padding(.horizontal, 15)
+                }
+                .navigationTransition(.zoom(sourceID: "MINITIMER", in: animation))
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func NativeTabView() -> some View {
+        TabView {
+            Tab.init("Home", systemImage: "house.fill") {
+                TimerView()
+            }
+                        
+            Tab.init("Pet Shop", systemImage: "bag.fill") {
+                NavigationStack {
+                    List {
+                        
+                    }
+                    .navigationTitle("Pet Shop")
                 }
             }
-        } detail: {
-            Text("Select an item")
+            
+            Tab.init("Settings", systemImage: "gear") {
+                NavigationStack {
+                    List {
+                        
+                    }
+                    .navigationTitle("Settings")
+                }
+            }            
         }
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+    @ViewBuilder
+    func TimerInfo(_ size: CGSize) -> some View {
+        HStack(spacing: 12) {
+            RoundedRectangle(cornerRadius: size.height / 4)
+                .fill(.blue.gradient)
+                .frame(width: size.width, height: size.height)
+            
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Some Apple Music Title")
+                    .font(.callout)
+                
+                Text("Some Artist Name")
+                    .font(.caption2)
+                    .foregroundStyle(.gray)
+            }
+            .lineLimit(1)
         }
     }
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+    @ViewBuilder
+    func MiniTimerView() -> some View {
+        HStack(spacing: 15) {
+            TimerInfo(.init(width: 30, height: 30))
+            
+            Spacer(minLength: 0)
+            
+            Button {
+                
+            } label: {
+                Image(systemName: "play.fill")
+                    .contentShape(.rect)
+            }
+            .padding(.trailing, 10)
+            
+            Button {
+                
+            } label: {
+                Image(systemName: "forward.fill")
+                    .contentShape(.rect)
             }
         }
+        .padding(.horizontal, 15)
     }
+
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: UserProgress.self, inMemory: true)
 }

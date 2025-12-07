@@ -7,17 +7,17 @@
 
 import Foundation
 
-struct Tag: Identifiable, Hashable {
+struct Pet: Identifiable, Hashable {
     var name: String
-    var color: String
+    var image: String
     let id = UUID()
     
-    static func preview() -> [Tag] {
+    static func preview() -> [Pet] {
         [
-            Tag(name: "Food", color: ".red"),
-            Tag(name: "Transport", color: ".blue"),
-            Tag(name: "Health", color: ".green"),
-            Tag(name: "Other", color: ".yellow")
+            Pet(name: "Cat", image: "cat_idle"),
+            Pet(name: "Cat", image: "cat_idle"),
+            Pet(name: "Cat", image: "cat_idle"),
+            Pet(name: "Cat", image: "cat_idle")
         ]
     }
 }

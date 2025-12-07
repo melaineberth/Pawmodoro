@@ -6,14 +6,79 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		97C454E32EE5558C0036C500 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C454E22EE5558C0036C500 /* WidgetKit.framework */; };
+		97C454E52EE5558C0036C500 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C454E42EE5558C0036C500 /* SwiftUI.framework */; };
+		97C454F82EE556F20036C500 /* PawmodoroWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 97C454E02EE5558C0036C500 /* PawmodoroWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		97C454F92EE556F20036C500 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C454C42EE553970036C500 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 97C454DF2EE5558C0036C500;
+			remoteInfo = PawmodoroWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		97C454FB2EE556F20036C500 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				97C454F82EE556F20036C500 /* PawmodoroWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		97C454CC2EE553970036C500 /* Pawmodoro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pawmodoro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		97C454E02EE5558C0036C500 /* PawmodoroWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PawmodoroWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		97C454E22EE5558C0036C500 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		97C454E42EE5558C0036C500 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		97C454FD2EE557A20036C500 /* PawmodoroWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PawmodoroWidgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		97C454F32EE5558D0036C500 /* Exceptions for "PawmodoroWidget" folder in "PawmodoroWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 97C454DF2EE5558C0036C500 /* PawmodoroWidgetExtension */;
+		};
+		97C455012EE558770036C500 /* Exceptions for "Pawmodoro" folder in "PawmodoroWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Data/Pet.swift,
+				Shared/CustomTimer.swift,
+				Shared/FocusAttributes.swift,
+				Shared/UserProgress.swift,
+			);
+			target = 97C454DF2EE5558C0036C500 /* PawmodoroWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		97C454CE2EE553970036C500 /* Pawmodoro */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				97C455012EE558770036C500 /* Exceptions for "Pawmodoro" folder in "PawmodoroWidgetExtension" target */,
+			);
 			path = Pawmodoro;
+			sourceTree = "<group>";
+		};
+		97C454E62EE5558C0036C500 /* PawmodoroWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				97C454F32EE5558D0036C500 /* Exceptions for "PawmodoroWidget" folder in "PawmodoroWidgetExtension" target */,
+			);
+			path = PawmodoroWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -26,13 +91,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		97C454DD2EE5558C0036C500 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				97C454E52EE5558C0036C500 /* SwiftUI.framework in Frameworks */,
+				97C454E32EE5558C0036C500 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		97C454C32EE553970036C500 = {
 			isa = PBXGroup;
 			children = (
+				97C454FD2EE557A20036C500 /* PawmodoroWidgetExtension.entitlements */,
 				97C454CE2EE553970036C500 /* Pawmodoro */,
+				97C454E62EE5558C0036C500 /* PawmodoroWidget */,
+				97C454E12EE5558C0036C500 /* Frameworks */,
 				97C454CD2EE553970036C500 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,8 +118,18 @@
 			isa = PBXGroup;
 			children = (
 				97C454CC2EE553970036C500 /* Pawmodoro.app */,
+				97C454E02EE5558C0036C500 /* PawmodoroWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		97C454E12EE5558C0036C500 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				97C454E22EE5558C0036C500 /* WidgetKit.framework */,
+				97C454E42EE5558C0036C500 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -55,10 +142,12 @@
 				97C454C82EE553970036C500 /* Sources */,
 				97C454C92EE553970036C500 /* Frameworks */,
 				97C454CA2EE553970036C500 /* Resources */,
+				97C454FB2EE556F20036C500 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				97C454FA2EE556F20036C500 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				97C454CE2EE553970036C500 /* Pawmodoro */,
@@ -69,6 +158,28 @@
 			productName = Pawmodoro;
 			productReference = 97C454CC2EE553970036C500 /* Pawmodoro.app */;
 			productType = "com.apple.product-type.application";
+		};
+		97C454DF2EE5558C0036C500 /* PawmodoroWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 97C454F42EE5558D0036C500 /* Build configuration list for PBXNativeTarget "PawmodoroWidgetExtension" */;
+			buildPhases = (
+				97C454DC2EE5558C0036C500 /* Sources */,
+				97C454DD2EE5558C0036C500 /* Frameworks */,
+				97C454DE2EE5558C0036C500 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				97C454E62EE5558C0036C500 /* PawmodoroWidget */,
+			);
+			name = PawmodoroWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = PawmodoroWidgetExtension;
+			productReference = 97C454E02EE5558C0036C500 /* PawmodoroWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -83,6 +194,9 @@
 					97C454CB2EE553970036C500 = {
 						CreatedOnToolsVersion = 26.1.1;
 					};
+					97C454DF2EE5558C0036C500 = {
+						CreatedOnToolsVersion = 26.1.1;
+					};
 				};
 			};
 			buildConfigurationList = 97C454C72EE553970036C500 /* Build configuration list for PBXProject "Pawmodoro" */;
@@ -94,18 +208,29 @@
 			);
 			mainGroup = 97C454C32EE553970036C500;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				97C455522EE58B530036C500 /* XCRemoteSwiftPackageReference "EmojiPicker" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 97C454CD2EE553970036C500 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				97C454CB2EE553970036C500 /* Pawmodoro */,
+				97C454DF2EE5558C0036C500 /* PawmodoroWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		97C454CA2EE553970036C500 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		97C454DE2EE5558C0036C500 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +247,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		97C454DC2EE5558C0036C500 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		97C454FA2EE556F20036C500 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 97C454DF2EE5558C0036C500 /* PawmodoroWidgetExtension */;
+			targetProxy = 97C454F92EE556F20036C500 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		97C454D72EE553980036C500 /* Debug */ = {
@@ -246,6 +386,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Pawmodoro/Pawmodoro.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QDX3PVYY6M;
@@ -254,6 +395,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -274,13 +416,14 @@
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 26.1;
 			};
 			name = Debug;
@@ -290,6 +433,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Pawmodoro/Pawmodoro.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QDX3PVYY6M;
@@ -298,6 +442,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -318,13 +463,87 @@
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				XROS_DEPLOYMENT_TARGET = 26.1;
+			};
+			name = Release;
+		};
+		97C454F52EE5558D0036C500 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = PawmodoroWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QDX3PVYY6M;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PawmodoroWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PawmodoroWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = melainebert.Pawmodoro.PawmodoroWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = xros;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				XROS_DEPLOYMENT_TARGET = 26.1;
+			};
+			name = Debug;
+		};
+		97C454F62EE5558D0036C500 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = PawmodoroWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QDX3PVYY6M;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PawmodoroWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PawmodoroWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = melainebert.Pawmodoro.PawmodoroWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = xros;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
 				XROS_DEPLOYMENT_TARGET = 26.1;
 			};
 			name = Release;
@@ -350,7 +569,27 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		97C454F42EE5558D0036C500 /* Build configuration list for PBXNativeTarget "PawmodoroWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				97C454F52EE5558D0036C500 /* Debug */,
+				97C454F62EE5558D0036C500 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		97C455522EE58B530036C500 /* XCRemoteSwiftPackageReference "EmojiPicker" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/StewartLynch/EmojiPicker";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 97C454C42EE553970036C500 /* Project object */;
 }

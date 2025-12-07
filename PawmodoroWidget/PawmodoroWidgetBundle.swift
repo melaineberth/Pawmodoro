@@ -11,6 +11,6 @@ import SwiftUI
 @main
 struct PawmodoroWidgetBundle: WidgetBundle {
     var body: some Widget {
-        PawmodoroWidget()
+        PawmodoroWidgetLiveActivity()
     }
 }
