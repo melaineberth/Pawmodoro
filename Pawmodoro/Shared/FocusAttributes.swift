@@ -19,4 +19,6 @@ struct FocusAttributes: ActivityAttributes {
 
     // Les propriétés ici sont statiques (elles ne changent pas une fois le timer lancé).
     var petName: String
+    var timerName: String
+    var totalDuration: String
 }

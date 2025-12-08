@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import ActivityKit // Indispensable pour parler à la Dynamic Island
+import ActivityKit
 import SwiftData
 
 struct TimerView: View {
@@ -124,7 +124,7 @@ struct TimerView: View {
             
             // On lance le focus seulement si aucun n'est en cours
             if !isFocusing {
-                startActivity()
+                startActivity(timerName: name)
             }
         } label: {
             HStack(spacing: 12) {
@@ -163,9 +163,13 @@ struct TimerView: View {
         }
     }
     
-    func startActivity() {
+    func startActivity(timerName: String = "Focus") {
         // 1. Définir les données statiques
-        let attributes = FocusAttributes(petName: "cat")
+        let attributes = FocusAttributes(
+            petName: "cat",
+            timerName: timerName,
+            totalDuration: "\(selectedMinutes) min"
+        )
         
         // 2. Calculer la date de fin
         let futureDate = Date().addingTimeInterval(Double(selectedMinutes) * 60)
@@ -228,12 +232,22 @@ struct TimerView: View {
         currentFrame = 0
         
         // Créer un timer qui se déclenche toutes les 0.5 secondes
-        animationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            // Passer à la frame suivante (0 → 1 → 2 → 3 → 0...)
-            currentFrame = (currentFrame + 1) % 4
-            
-            // Mettre à jour l'activité avec la nouvelle frame
-            updateActivityFrame()
+        animationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+            // Après 30 secondes, ralentir l'animation
+            if timer.fireDate.timeIntervalSinceNow > 30 {
+                self.animationTimer?.invalidate()
+                // Créer un nouveau timer plus lent
+                self.animationTimer = Timer.scheduledTimer(
+                    withTimeInterval: 5.0, // Beaucoup plus lent
+                    repeats: true
+                ) { _ in
+                    self.currentFrame = (self.currentFrame + 1) % 4
+                    self.updateActivityFrame()
+                }
+            } else {
+                self.currentFrame = (self.currentFrame + 1) % 4
+                self.updateActivityFrame()
+            }
         }
     }
     

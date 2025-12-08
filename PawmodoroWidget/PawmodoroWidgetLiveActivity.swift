@@ -8,6 +8,7 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
+import AppIntents
 
 struct PawmodoroWidgetLiveActivity: Widget {
     
@@ -16,71 +17,97 @@ struct PawmodoroWidgetLiveActivity: Widget {
         ActivityConfiguration(for: FocusAttributes.self) { context in
             
             // 1. VUE ÉCRAN DE VERROUILLAGE (Lock Screen)
-            HStack {
-                // On affiche directement l'image correspondant à currentFrame
-                // L'animation vient des mises à jour de l'app, pas de TimelineView !
-                Image("cat_work_\(context.state.currentFrame)")
-                   .resizable()
-                   .interpolation(.none)
-                   .scaledToFit()
-                   .frame(width: 50, height: 50)
-                
-                VStack(alignment: .leading) {
-                    Text("Focus en cours")
-                       .font(.headline)
-                       .foregroundStyle(.white)
+            VStack {
+                HStack {
+                    Image("cat_work_\(context.state.currentFrame)")
+                        .resizable()
+                        .interpolation(.none)
+                        .scaledToFit()
+                        .frame(width: 60, height: 60)
+                    VStack(alignment: .leading) {
+                        Text(context.attributes.timerName)
+                            .foregroundStyle(.white)
+                            .font(.callout)
+                            .fontWeight(.semibold)
+                        Text(context.attributes.totalDuration)
+                            .font(.caption)
+                            .foregroundStyle(.gray)
+                    }
+                    
+                    Spacer()
                     
                     Text(timerInterval: Date()...context.state.endTime, countsDown: true)
-                       .font(.system(.body, design: .monospaced))
-                       .foregroundStyle(.yellow)
+                        .multilineTextAlignment(.trailing)
+                        .foregroundStyle(.white)
+                        .font(.custom("", size: 35))
+                        .monospacedDigit()
+                        .dynamicIsland(verticalPlacement: .belowIfTooWide)
                 }
-                Spacer()
+                // Bouton Stop
+                Button(intent: StopTimerIntent()) {
+                    HStack {
+                        Image(systemName: "stop.fill")
+                        Text("Stop timer")
+                            .fontWeight(.semibold)
+                            .padding(.vertical, 5)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .foregroundColor(.white)
+                }
+                .buttonStyle(.glassProminent) // Important pour garder le style custom
+                .tint(.orange)
+                .padding(.top, 10)
             }
-           .padding()
-           .activityBackgroundTint(Color.black.opacity(0.8))
-            
+            .padding()
+            .background(.black)
+
         } dynamicIsland: { context in
             
-            DynamicIsland {
+            DynamicIsland() {
                 
                 // A. VUE ÉTENDUE (Appui long)
                 DynamicIslandExpandedRegion(.leading) {
-                    VStack(spacing: 4) {
+                    HStack() {
                         Image("cat_work_\(context.state.currentFrame)")
-                           .resizable()
-                           .interpolation(.none)
-                           .scaledToFit()
-                           .frame(width: 60, height: 60)
-                        
-                        Text("Focus")
-                           .font(.caption)
-                           .foregroundStyle(.secondary)
+                            .resizable()
+                            .interpolation(.none)
+                            .scaledToFit()
+                            .frame(width: 60, height: 60)
+                        VStack(alignment: .leading) {
+                            Text(context.attributes.timerName)
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                            Text(context.attributes.totalDuration)
+                                .font(.footnote)
+                                .foregroundStyle(.gray)
+                        }
                     }
+                    .dynamicIsland(verticalPlacement: .belowIfTooWide)
                 }
                 
                 DynamicIslandExpandedRegion(.trailing) {
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Text(timerInterval: Date()...context.state.endTime, countsDown: true)
-                           .multilineTextAlignment(.trailing)
-                           .foregroundStyle(.yellow)
-                           .font(.title2)
-                           .monospacedDigit()
-                        
-                        Text("restant")
-                           .font(.caption2)
-                           .foregroundStyle(.secondary)
-                    }
+                    Text(timerInterval: Date()...context.state.endTime, countsDown: true)
+                        .multilineTextAlignment(.trailing)
+                        .foregroundStyle(.white)
+                        .font(.custom("", size: 35))
+                        .monospacedDigit()
                 }
                 
                 DynamicIslandExpandedRegion(.bottom) {
-                    HStack {
-                        Image(systemName: "flame.fill")
-                           .foregroundStyle(.orange)
-                        Text("Keep going! 🐾")
-                           .font(.caption)
+                    // Bouton Stop
+                    Button(intent: StopTimerIntent()) {
+                        HStack {
+                            Image(systemName: "stop.fill")
+                            Text("Stop timer")
+                                .fontWeight(.semibold)
+                                .padding(.vertical, 5)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(.white)
                     }
-                    .foregroundStyle(.white.opacity(0.8))
-                    .padding(.top, 8)
+                    .buttonStyle(.glassProminent) // Important pour garder le style custom
+                    .tint(.orange)
+                    .padding(.top, 15)
                 }
                 
             } compactLeading: {
@@ -98,7 +125,7 @@ struct PawmodoroWidgetLiveActivity: Widget {
                 Text(timerInterval: Date()...context.state.endTime, countsDown: true)
                    .monospacedDigit()
                    .font(.caption2)
-                   .foregroundStyle(.yellow)
+                   .foregroundStyle(.white)
                    .frame(width: 40)
                 
             } minimal: {
@@ -112,4 +139,11 @@ struct PawmodoroWidgetLiveActivity: Widget {
             }
         }
     }
+}
+
+#Preview("Dynamic Island", as: .dynamicIsland(.expanded), using: FocusAttributes(petName: "Cat", timerName: "Coffee Time", totalDuration: "30 minutes")) {
+    PawmodoroWidgetLiveActivity()
+} contentStates: {
+    FocusAttributes.ContentState(endTime: Date().addingTimeInterval(1500), currentFrame: 0)
+    FocusAttributes.ContentState(endTime: Date().addingTimeInterval(60), currentFrame: 1)
 }

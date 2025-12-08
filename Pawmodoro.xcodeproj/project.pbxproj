@@ -59,6 +59,7 @@
 				Data/Pet.swift,
 				Shared/CustomTimer.swift,
 				Shared/FocusAttributes.swift,
+				Shared/StopTimerIntent.swift,
 				Shared/UserProgress.swift,
 			);
 			target = 97C454DF2EE5558C0036C500 /* PawmodoroWidgetExtension */;
