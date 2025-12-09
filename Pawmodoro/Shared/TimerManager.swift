@@ -1,0 +1,202 @@
+//
+//  TimerManager.swift
+//  Pawmodoro
+//
+//  Created by Mélaine Berthelot on 09/12/2025.
+//
+
+import SwiftUI
+import ActivityKit
+
+@Observable
+class TimerManager {
+    // État du timer
+    var isFocusing = false
+    var selectedMinutes: Int = 25
+    var currentActivity: Activity<FocusAttributes>?
+    
+    // Informations pour le mini player
+    var currentTimerName: String = ""
+    var currentTimerIcon: String = ""
+    var endTime: Date?
+    
+    // Propriété observable pour forcer la mise à jour de l'UI chaque seconde
+    var lastUpdate: Date = Date()
+    
+    // Animation du chat
+    var animationTimer: Timer?
+    var currentFrame: Int = 0
+    
+    // Timer pour mettre à jour l'affichage du temps restant
+    private var displayTimer: Timer?
+    
+    // Singleton pour partager l'état
+    static let shared = TimerManager()
+    
+    private init() {}
+    
+    // MARK: - Méthodes pour contrôler le timer
+    
+    func startActivity(timerName: String, duration: Int, icon: String) {
+        selectedMinutes = duration
+        currentTimerName = timerName
+        currentTimerIcon = icon
+        
+        // 1. Définir les données statiques
+        let attributes = FocusAttributes(
+            petName: "cat",
+            timerName: timerName,
+            totalDuration: "\(duration) min"
+        )
+        
+        // 2. Calculer la date de fin
+        let futureDate = Date().addingTimeInterval(Double(duration) * 60)
+        endTime = futureDate
+        
+        // 3. État initial avec la première frame
+        let contentState = FocusAttributes.ContentState(
+            endTime: futureDate,
+            currentFrame: 0
+        )
+        
+        // 4. Lancer l'activité
+        do {
+            let content = ActivityContent(state: contentState, staleDate: nil)
+            
+            let activity = try Activity<FocusAttributes>.request(
+                attributes: attributes,
+                content: content,
+                pushType: nil
+            )
+            currentActivity = activity
+            isFocusing = true
+            
+            // 5. Démarrer le timer d'animation
+            startAnimationTimer()
+            
+            // 6. Démarrer le timer d'affichage
+            startDisplayTimer()
+            
+            print("✅ Activité lancée ID: \(activity.id)")
+        } catch {
+            print("❌ Erreur lors du lancement : \(error.localizedDescription)")
+        }
+    }
+    
+    func stopActivity() {
+        guard let activity = currentActivity else { return }
+        
+        // Arrêter les timers
+        stopAnimationTimer()
+        stopDisplayTimer()
+        
+        // État final
+        let finalState = FocusAttributes.ContentState(
+            endTime: Date(),
+            currentFrame: 0
+        )
+        
+        Task {
+            let finalContent = ActivityContent(state: finalState, staleDate: nil)
+            await activity.end(finalContent, dismissalPolicy: .default)
+            
+            await MainActor.run {
+                self.isFocusing = false
+                self.currentActivity = nil
+                self.endTime = nil
+            }
+        }
+    }
+    
+    func togglePlayPause() {
+        // TODO: Implémenter pause/resume si nécessaire
+        // Pour l'instant, juste stop
+        if isFocusing {
+            stopActivity()
+        }
+    }
+    
+    // MARK: - Animation du chat
+    
+    private func startAnimationTimer() {
+        currentFrame = 0
+        
+        animationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+            if timer.fireDate.timeIntervalSinceNow > 30 {
+                self.animationTimer?.invalidate()
+                self.animationTimer = Timer.scheduledTimer(
+                    withTimeInterval: 5.0,
+                    repeats: true
+                ) { _ in
+                    self.currentFrame = (self.currentFrame + 1) % 4
+                    self.updateActivityFrame()
+                }
+            } else {
+                self.currentFrame = (self.currentFrame + 1) % 4
+                self.updateActivityFrame()
+            }
+        }
+    }
+    
+    private func stopAnimationTimer() {
+        animationTimer?.invalidate()
+        animationTimer = nil
+    }
+    
+    // MARK: - Display Timer
+    
+    private func startDisplayTimer() {
+        // Mettre à jour l'affichage chaque seconde
+        displayTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            
+            // CRUCIAL : Mettre à jour lastUpdate pour déclencher la mise à jour de l'UI
+            self.lastUpdate = Date()
+            
+            // Vérifier si le timer est terminé
+            if let remaining = self.remainingTime, remaining <= 0 {
+                self.stopActivity()
+            }
+        }
+    }
+    
+    private func stopDisplayTimer() {
+        displayTimer?.invalidate()
+        displayTimer = nil
+    }
+    
+    private func updateActivityFrame() {
+        guard let activity = currentActivity else { return }
+        
+        let updatedState = FocusAttributes.ContentState(
+            endTime: activity.content.state.endTime,
+            currentFrame: currentFrame
+        )
+        
+        Task {
+            await activity.update(
+                ActivityContent(
+                    state: updatedState,
+                    staleDate: nil
+                )
+            )
+        }
+    }
+    
+    // MARK: - Helpers
+    
+    var remainingTime: TimeInterval? {
+        guard let endTime = endTime else { return nil }
+        return endTime.timeIntervalSinceNow
+    }
+    
+    var remainingTimeFormatted: String {
+        guard let remaining = remainingTime, remaining > 0 else {
+            return "0:00"
+        }
+        
+        let minutes = Int(remaining) / 60
+        let seconds = Int(remaining) % 60
+        return String(format: "%d:%02d", minutes, seconds)
+    }
+}
