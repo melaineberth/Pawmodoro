@@ -199,4 +199,16 @@ class TimerManager {
         let seconds = Int(remaining) % 60
         return String(format: "%d:%02d", minutes, seconds)
     }
+    
+    // Calcule la progression du timer (0.0 = début, 1.0 = fin)
+    // C'est notre nouvelle propriété pour le cercle de progression !
+    var progress: Double {
+        guard let endTime = endTime else { return 0 }
+        let totalDuration = Double(selectedMinutes * 60) // Durée totale en secondes
+        let remaining = endTime.timeIntervalSinceNow // Temps restant
+        let elapsed = totalDuration - remaining // Temps écoulé
+        
+        // On limite entre 0 et 1 pour éviter les valeurs bizarres
+        return min(max(elapsed / totalDuration, 0), 1)
+    }
 }

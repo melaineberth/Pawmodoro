@@ -35,84 +35,89 @@ struct ContentView: View {
             }
         }
         .fullScreenCover(isPresented: $expandMiniTimer) {
-            ScrollView {
-                VStack(spacing: 20) {
-                    // Afficher plus d'informations sur le timer
-                    if timerManager.isFocusing {
-                        VStack(spacing: 12) {
-                            Text(timerManager.currentTimerIcon)
-                                .font(.system(size: 80))
-                            
-                            Text(timerManager.currentTimerName)
-                                .font(.title)
-                                .fontWeight(.bold)
-                            
-                            Text(timerManager.remainingTimeFormatted)
-                                .font(.system(size: 60, weight: .light, design: .rounded))
-                                .monospacedDigit()
-                            
-                            Text("of \(timerManager.selectedMinutes) minutes")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding(.top, 40)
-                    }
-                }
-            }
-            .safeAreaInset(edge: .top, spacing: 0) {
-                VStack(spacing: 10) {
-                    Capsule()
-                        .fill(.primary.secondary)
-                        .frame(width: 35, height: 3)
+            VStack(spacing: 30) {
+                if timerManager.isFocusing {
+                    // Notre nouveau composant circulaire ! ✨
+                    CircularProgressView(
+                        progress: timerManager.progress,
+                        timeRemaining: timerManager.remainingTimeFormatted,
+                        totalMinutes: timerManager.selectedMinutes,
+                        timerName: timerManager.currentTimerName,
+                        icon: timerManager.currentTimerIcon,
+                        accentColor: .orange // Tu peux changer la couleur ici
+                    )
+                    .padding(.top, 60)
                     
-                    HStack(spacing: 0) {
-                        HStack(spacing: 12) {
-                            if timerManager.isFocusing {
-                                Text(timerManager.currentTimerIcon)
-                                    .font(.system(size: 40))
-                                    .frame(width: 80, height: 80)
-                                    .background(.blue.gradient)
-                                    .cornerRadius(20)
-                            } else {
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(.blue.gradient)
-                                    .frame(width: 80, height: 80)
+                    // Bouton pause/stop plus visible
+                    HStack(spacing: 20) {
+                        Button {
+                            timerManager.togglePlayPause()
+                        } label: {
+                            HStack {
+                                Image(systemName: "pause.fill")
+                                Text("Pause")
                             }
-                            
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(timerManager.isFocusing ? timerManager.currentTimerName : "No Timer")
-                                    .font(.callout)
-                                
-                                Text(timerManager.isFocusing ? timerManager.remainingTimeFormatted : "Start a timer")
-                                    .font(.caption2)
-                                    .foregroundStyle(.gray)
-                            }
-                            .lineLimit(1)
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(.orange.gradient)
+                            .cornerRadius(15)
                         }
                         
-                        Spacer(minLength: 0)
-                        
-                        Group {
-                            Button("", systemImage: timerManager.isFocusing ? "pause.circle.fill" : "play.circle.fill") {
-                                if timerManager.isFocusing {
-                                    timerManager.togglePlayPause()
-                                }
+                        Button {
+                            timerManager.stopActivity()
+                            expandMiniTimer = false
+                        } label: {
+                            HStack {
+                                Image(systemName: "stop.fill")
+                                Text("Stop")
                             }
-                            .disabled(!timerManager.isFocusing)
-                            
-                            Button("", systemImage: "stop.circle.fill") {
-                                timerManager.stopActivity()
-                                expandMiniTimer = false
-                            }
-                            .disabled(!timerManager.isFocusing)
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(.red.gradient)
+                            .cornerRadius(15)
                         }
-                        .font(.title)
-                        .foregroundStyle(Color.primary, Color.primary.opacity(0.1))
                     }
-                    .padding(.horizontal, 15)
+                    .padding(.horizontal, 30)
+                    .padding(.top, 20)
+                } else {
+                    // État quand aucun timer n'est actif
+                    VStack(spacing: 20) {
+                        Image(systemName: "timer")
+                            .font(.system(size: 80))
+                            .foregroundStyle(.secondary)
+                        
+                        Text("No timer active")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        
+                        Text("Start a timer from the home tab")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        
+                        Button {
+                            expandMiniTimer = false
+                        } label: {
+                            Text("Close")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(.orange.gradient)
+                                .cornerRadius(15)
+                        }
+                        .padding(.horizontal, 30)
+                        .padding(.top, 20)
+                    }
+                    .padding(.top, 100)
                 }
-                .navigationTransition(.zoom(sourceID: "MINITIMER", in: animation))
             }
+            .frame(maxWidth: .infinity,maxHeight: .infinity)
+            .ignoresSafeArea(edges: .all)
+            .navigationTransition(.zoom(sourceID: "MINITIMER", in: animation))
         }
     }
     
@@ -139,7 +144,7 @@ struct ContentView: View {
                     }
                     .navigationTitle("Settings")
                 }
-            }            
+            }
         }
     }
 
@@ -169,7 +174,7 @@ struct ContentView: View {
                 // Afficher l'icône du timer en cours
                 if timerManager.isFocusing {
                     Text(timerManager.currentTimerIcon)
-                        .font(.title2)
+                        .font(.caption)
                         .frame(width: 30, height: 30)
                         .background(.blue.gradient)
                         .cornerRadius(8)
