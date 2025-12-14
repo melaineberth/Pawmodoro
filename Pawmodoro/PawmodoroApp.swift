@@ -13,7 +13,6 @@ struct PawmodoroApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             UserProgress.self,
-            CustomTimer.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

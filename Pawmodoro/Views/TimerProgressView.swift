@@ -1,21 +1,18 @@
 //
-//  TimerView.swift
+//  CircularProgressView.swift
 //  Pawmodoro
 //
-//  Created by Mélaine Berthelot on 07/12/2025.
+//  Created by Mélaine Berthelot on 09/12/2025.
 //
 
 import SwiftUI
-import ActivityKit
-import SwiftData
 
-struct TimerView: View {
-    @State private var searchText: String = ""
-    @State private var showBottomSheet: Bool = false
-    @State private var predefinedTimers = PredefinedTimer.preview()
+struct TimerProgressView: View {
+    // Pour l'animation fluide du cercle
+    @State private var animatedProgress: Double = 0
+    @State private var lineWidth: CGFloat = 40
     @State private var pets = Pet.preview()
     @State private var timerManager = TimerManager.shared
-    @State private var lineWidth: CGFloat = 40
     
     // Pour le feedback haptique
     private let impactFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -29,35 +26,25 @@ struct TimerView: View {
     @State var startProgress: CGFloat = 0
     @State var toProgress: CGFloat = 0.5 // 50% du cercle = 30 minutes
     
-    @Environment(\.modelContext) var context
-
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 40) {
+        VStack(spacing: 50) {
+            // Le cercle de progression avec le temps au centre
+            TimerSlider()
+            
+            Text(formatTime(minutes: getTimeDifference()))
+                .font(.system(size: 48, weight: .semibold))
+                .monospacedDigit()
+            
+            Button {
                 
-                TimerSlider()
-                
-                Text(timerManager.isFocusing ? timerManager.remainingTimeFormatted : formatTime(minutes: getTimeDifference()))
-                    .font(.system(size: 48, weight: .semibold))
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
-                
-                Button {
-                    startTimer()
-                } label: {
-                    Text(timerManager.isFocusing ? "Stop Timer" : "Start Timer")
-                        .foregroundStyle(.white)
-                        .padding(.vertical)
-                        .padding(.horizontal, 40)
-                        .background(timerManager.isFocusing ? Color(.red) : Color(.orange), in: Capsule())
-                        .glassEffect()
-                }
+            } label: {
+                Text("Start Sleep")
+                    .foregroundStyle(.white)
+                    .padding(.vertical)
+                    .padding(.horizontal, 40)
+                    .background(Color(.orange),in: Capsule())
+                    .glassEffect()
             }
-            .navigationTitle(Text("Pawmodoro"))
-        }
-        // Force la mise à jour de la vue chaque fois que lastUpdate change
-        .onChange(of: timerManager.lastUpdate) { _, _ in
-            // Trigger UI update
         }
     }
     
@@ -92,34 +79,29 @@ struct TimerView: View {
                    .stroke(.black.opacity(0.06), lineWidth: lineWidth)
                
                Circle()
-                   .trim(from: startProgress, to: timerManager.isFocusing ? CGFloat(timerManager.progress) : toProgress)
+                   .trim(from: startProgress, to: toProgress)
                    .stroke(Color(.orange), style: StrokeStyle(lineWidth: lineWidth, lineCap: .round, lineJoin: .round))
                    .rotationEffect(.init(degrees: -90))
-                   .animation(.linear(duration: 1.0), value: timerManager.progress)
-                          
-               if !timerManager.isFocusing {
-                   Circle()
-                       .fill(Color(.white))
-                       .frame(width: 30, height: 30)
-                   // Rotating image inside the circle
-                       .rotationEffect(.init(degrees: 90))
-                       .rotationEffect(.init(degrees: -toAngle))
-                       .background(.white, in: Circle())
-                   // Moving to right & rotating
-                       .offset(x: width / 2)
-                   // To the current angle
-                       .rotationEffect(.init(degrees: toAngle))
-                       .gesture(
-                        DragGesture()
-                            .onChanged({value in
-                                onDrag(value: value)
-                            })
-                       )
-                       .rotationEffect(.init(degrees: -90))
-                       .opacity(timerManager.isFocusing ? 0.5 : 1.0) // Visuellement désactivé pendant le timer
-
-               }
-            }
+                              
+               Circle()
+                   .fill(Color(.white))
+                   .frame(width: 30, height: 30)
+               // Rotating image inside the circle
+                   .rotationEffect(.init(degrees: 90))
+                   .rotationEffect(.init(degrees: -toAngle))
+                   .background(.white, in: Circle())
+               // Moving to right & rotating
+                   .offset(x: width / 2)
+               // To the current angle
+                   .rotationEffect(.init(degrees: toAngle))
+                   .gesture(
+                    DragGesture()
+                        .onChanged({value in
+                            onDrag(value: value)
+                        })
+                   )
+                   .rotationEffect(.init(degrees: -90))
+           }
         }
        .frame(width: screenBounds().width / 1.6, height: screenBounds().height / 3.2)
     }
@@ -204,34 +186,8 @@ struct TimerView: View {
             }
         }
     }
-    
-    // MARK: - Timer Control
-    
-    func startTimer() {
-        if timerManager.isFocusing {
-            // Si le timer est en cours, l'arrêter
-            timerManager.stopActivity()
-        } else {
-            // Sinon, démarrer un nouveau timer
-            let duration = getTimeDifference()
-            timerManager.startActivity(
-                timerName: "Focus Timer",
-                duration: duration,
-                icon: "🐱"
-            )
-        }
-    }
-}
-
-// MARK: Extensions
-extension View{
-    
-    // MARK: Screen Bounds Extension
-    func screenBounds()->CGRect{
-        return UIScreen.main.bounds
-    }
 }
 
 #Preview {
-    TimerView()
+    TimerProgressView()
 }

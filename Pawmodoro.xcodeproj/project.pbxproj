@@ -57,7 +57,6 @@
 			membershipExceptions = (
 				Assets.xcassets,
 				Data/Pet.swift,
-				Shared/CustomTimer.swift,
 				Shared/FocusAttributes.swift,
 				Shared/StopTimerIntent.swift,
 				Shared/UserProgress.swift,
