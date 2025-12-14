@@ -10,12 +10,11 @@ import ActivityKit
 import SwiftData
 
 struct TimerView: View {
-    @State private var searchText: String = ""
-    @State private var showBottomSheet: Bool = false
-    @State private var predefinedTimers = PredefinedTimer.preview()
     @State private var pets = Pet.preview()
     @State private var timerManager = TimerManager.shared
     @State private var lineWidth: CGFloat = 40
+    @State private var selectedPet: Pet? = nil
+    @State private var scrollPosition: Pet.ID?
     
     // Pour le feedback haptique
     private let impactFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -52,12 +51,35 @@ struct TimerView: View {
                         .background(timerManager.isFocusing ? Color(.red) : Color(.orange), in: Capsule())
                         .glassEffect()
                 }
+                .disabled(selectedPet == nil && !timerManager.isFocusing) // On ne peut pas démarrer sans avoir sélectionné un animal
             }
             .navigationTitle(Text("Pawmodoro"))
         }
         // Force la mise à jour de la vue chaque fois que lastUpdate change
         .onChange(of: timerManager.lastUpdate) { _, _ in
             // Trigger UI update
+        }
+        // Quand la position du scroll change, on met à jour l'animal sélectionné
+        .onChange(of: scrollPosition) { _, newPosition in
+            guard let newPosition = newPosition,
+                  let newPet = pets.first(where: { $0.id == newPosition }),
+                  newPet.isOwned else { return }
+            
+            // Si c'est un nouvel animal, on le sélectionne avec un feedback
+            if selectedPet?.id != newPosition {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    selectedPet = newPet
+                }
+                let feedback = UIImpactFeedbackGenerator(style: .medium)
+                feedback.impactOccurred()
+            }
+        }
+        .onAppear {
+            // Sélectionner le premier animal possédé au démarrage
+            if let firstOwned = pets.first(where: { $0.isOwned }) {
+                selectedPet = firstOwned
+                scrollPosition = firstOwned.id
+            }
         }
     }
     
@@ -71,25 +93,42 @@ struct TimerView: View {
            
            ZStack {
                
-               // MARK: Animal Slider Design
+               // MARK: Animal Slider Design - Sélection automatique basée sur le scroll !
                ScrollView(.horizontal) {
-                   HStack(spacing: 25) {
+                   HStack(spacing: 40) {
                        ForEach(pets) { pet in
-                           Image(pet.image)
-                              .resizable()
-                              .interpolation(.none) // Pixel art net!
-                              .scaledToFit()
-                              .frame(height: 120)
-                              .animation(.bouncy, value: timerManager.isFocusing)
+                           PetSelectionCard(
+                               pet: pet,
+                               isSelected: selectedPet?.id == pet.id
+                           )
                        }
                    }
-                   .scrollTargetLayout() // Align content to the view
+                   .scrollTargetLayout()
                }
-               .contentMargins(50, for: .scrollContent) // Add padding
-               .scrollTargetBehavior(.viewAligned) // Align content behavior
+               .scrollPosition(id: $scrollPosition) // Track la position du scroll
+               .scrollIndicators(.hidden)
+               .contentMargins(65, for: .scrollContent)
+               .scrollTargetBehavior(.viewAligned) // Snap sur chaque animal
+               .disabled(timerManager.isFocusing) // Bloquer le scroll pendant le timer
+               
+               // Chevron gauche - n'apparaît que s'il y a un animal avant
+               if !timerManager.isFocusing, canScrollLeft {
+                   Image(systemName: "chevron.left")
+                       .font(.system(size: 15, weight: .bold))
+                       .foregroundStyle(.secondary)
+                       .offset(x: -80) // Position à gauche de l'animal
+               }
+               
+               // Chevron droit - n'apparaît que s'il y a un animal après
+               if !timerManager.isFocusing, canScrollRight {
+                   Image(systemName: "chevron.right")
+                       .font(.system(size: 15, weight: .bold))
+                       .foregroundStyle(.secondary)
+                       .offset(x: 80) // Position à droite de l'animal
+               }
                
                Circle()
-                   .stroke(.black.opacity(0.06), lineWidth: lineWidth)
+                   .stroke(Color(white: 0.95), lineWidth: lineWidth)
                
                Circle()
                    .trim(from: startProgress, to: timerManager.isFocusing ? CGFloat(timerManager.progress) : toProgress)
@@ -122,6 +161,26 @@ struct TimerView: View {
             }
         }
        .frame(width: screenBounds().width / 1.6, height: screenBounds().height / 3.2)
+    }
+    
+    // MARK: - Helpers pour les chevrons
+    
+    // Vérifie s'il y a un animal avant celui sélectionné
+    var canScrollLeft: Bool {
+        guard let selectedPet = selectedPet,
+              let currentIndex = pets.firstIndex(where: { $0.id == selectedPet.id }) else {
+            return false
+        }
+        return currentIndex > 0
+    }
+    
+    // Vérifie s'il y a un animal après celui sélectionné
+    var canScrollRight: Bool {
+        guard let selectedPet = selectedPet,
+              let currentIndex = pets.firstIndex(where: { $0.id == selectedPet.id }) else {
+            return false
+        }
+        return currentIndex < pets.count - 1
     }
     
     func onDrag(value: DragGesture.Value){
@@ -222,6 +281,35 @@ struct TimerView: View {
         }
     }
 }
+
+// MARK: - Pet Selection Card Component
+struct PetSelectionCard: View {
+    let pet: Pet
+    let isSelected: Bool
+    // Plus besoin de onTap, tout se fait automatiquement avec le scroll !
+    
+    var body: some View {
+        VStack {
+            Image(pet.image)
+                .resizable()
+                .interpolation(.none)
+                .scaledToFit()
+                .frame(height: 120)
+                .opacity(pet.isOwned ? 1.0 : 0.3)
+                .scaleEffect(isSelected ? 1.1 : 1.0)
+        }
+        .overlay(
+            Group {
+                if !pet.isOwned {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 30))
+                        .foregroundStyle(.gray)
+                }
+            }
+        )
+    }
+}
+
 
 // MARK: Extensions
 extension View{
