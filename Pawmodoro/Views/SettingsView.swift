@@ -11,6 +11,7 @@ struct SettingsView: View {
     @State private var isEnhanced: Bool = true
     @State private var themeMode: ThemeMode = .auto
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dismiss) private var dismiss
     
     enum ThemeMode: String, CaseIterable, Identifiable {
         case auto, light, dark
@@ -29,6 +30,7 @@ struct SettingsView: View {
                 Section {
                     Toggle("Push Notifications", isOn: $isEnhanced)
                         .toggleStyle(.switch)
+                        .tint(.orange)
                     
                     Picker("Theme Mode", selection: $themeMode) {
                         Text("Auto").tag(ThemeMode.auto)
@@ -52,6 +54,14 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle(Text("Settings"))
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(role: .cancel) {
+                        dismiss()
+                    }
+                }
+            }
         }
         .preferredColorScheme(preferredColorScheme)
     }

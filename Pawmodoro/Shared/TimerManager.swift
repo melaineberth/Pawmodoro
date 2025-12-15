@@ -43,14 +43,16 @@ class TimerManager {
         currentTimerIcon = icon
         
         // 1. Définir les données statiques
+        // Formater la durée pour l'affichage
+        let durationText = formatDurationForDisplay(seconds: duration)
         let attributes = FocusAttributes(
             petName: "cat",
             timerName: timerName,
-            totalDuration: "\(duration) min"
+            totalDuration: durationText
         )
         
-        // 2. Calculer la date de fin
-        let futureDate = Date().addingTimeInterval(Double(duration) * 60)
+        // 2. Calculer la date de fin (duration est maintenant en secondes)
+        let futureDate = Date().addingTimeInterval(Double(duration))
         endTime = futureDate
         
         // 3. État initial avec la première frame
@@ -80,6 +82,20 @@ class TimerManager {
             print("✅ Activité lancée ID: \(activity.id)")
         } catch {
             print("❌ Erreur lors du lancement : \(error.localizedDescription)")
+        }
+    }
+    
+    // Helper pour formater la durée en texte lisible
+    private func formatDurationForDisplay(seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        
+        if minutes == 0 {
+            return "\(remainingSeconds) sec"
+        } else if remainingSeconds == 0 {
+            return "\(minutes) min"
+        } else {
+            return "\(minutes) min \(remainingSeconds) sec"
         }
     }
     
@@ -204,7 +220,7 @@ class TimerManager {
     // C'est notre nouvelle propriété pour le cercle de progression !
     var progress: Double {
         guard let endTime = endTime else { return 0 }
-        let totalDuration = Double(selectedMinutes * 60) // Durée totale en secondes
+        let totalDuration = Double(selectedMinutes) // selectedMinutes contient maintenant des secondes
         let remaining = endTime.timeIntervalSinceNow // Temps restant
         let elapsed = totalDuration - remaining // Temps écoulé
         

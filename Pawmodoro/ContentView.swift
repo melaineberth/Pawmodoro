@@ -31,21 +31,12 @@ struct ContentView: View {
     @ViewBuilder
     func NativeTabView() -> some View {
         TabView {
-            Tab.init("Home", systemImage: "house.fill") {
+            Tab.init("Timer", systemImage: "timer") {
                 TimerView()
             }
                         
             Tab.init("Pet Shop", systemImage: "bag.fill") {
-                NavigationStack {
-                    List {
-                        
-                    }
-                    .navigationTitle("Pet Shop")
-                }
-            }
-            
-            Tab.init("Settings", systemImage: "gear") {
-                SettingsView()
+                ShopView()
             }
         }
         .tint(.orange)

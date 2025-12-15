@@ -11,14 +11,35 @@ struct Pet: Identifiable, Hashable {
     var name: String
     var image: String
     var isOwned: Bool // Est-ce que l'utilisateur possède cet animal ?
+    var price: Int // Prix en pièces pour acheter cet animal
+    var category: Category // Catégorie de l'animal
     let id = UUID()
+    
+    // MARK: - Category Enum
+    enum Category: String, CaseIterable, Hashable {
+        case classic = "Classic"
+        case special = "Special"
+        case seasonal = "Seasonal"
+        case premium = "Premium"
+    }
     
     static func preview() -> [Pet] {
         [
-            Pet(name: "Cat", image: "cat_idle", isOwned: true),
-            Pet(name: "Dog", image: "cat_idle", isOwned: true), // Pour l'instant on réutilise l'image du chat
-            Pet(name: "Bird", image: "cat_idle", isOwned: false), // Celui-là est verrouillé
-            Pet(name: "Fox", image: "cat_idle", isOwned: false)
+            Pet(name: "Cat", image: "cat_idle", isOwned: true, price: 0, category: .classic), // Gratuit par défaut
+            Pet(name: "Owl", image: "owl_idle", isOwned: true, price: 100, category: .classic),
+            Pet(name: "Penguin", image: "penguin_idle", isOwned: false, price: 150, category: .classic),
+            Pet(name: "Lazybones", image: "lazybones_idle", isOwned: false, price: 200, category: .classic),
+            Pet(name: "Rabbit", image: "rabbit_idle", isOwned: false, price: 250, category: .classic),
+            Pet(name: "Bird", image: "cat_idle", isOwned: false, price: 300, category: .classic),
+            Pet(name: "Bird", image: "cat_idle", isOwned: false, price: 350, category: .classic),
+            Pet(name: "Capybara", image: "capybara_idle", isOwned: false, price: 500, category: .classic)
         ]
     }
 }
+// MARK: - Array Extension for filtering by category
+extension Array where Element == Pet {
+    func filterByCategory(_ category: Pet.Category) -> [Pet] {
+        return self.filter { $0.category == category }
+    }
+}
+
