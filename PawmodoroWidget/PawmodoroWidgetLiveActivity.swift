@@ -45,13 +45,9 @@ struct PawmodoroWidgetLiveActivity: Widget {
                 }
                 // Bouton Stop
                 Button(intent: StopTimerIntent()) {
-                    HStack {
-                        Image(systemName: "stop.fill")
-                        Text("Stop timer")
-                            .fontWeight(.semibold)
-                            .padding(.vertical, 5)
-                    }
-                    .frame(maxWidth: .infinity)
+                    Text("Stop timer")
+                        .fontWeight(.semibold)
+                        .padding(.vertical, 5)                    .frame(maxWidth: .infinity)
                     .foregroundColor(.white)
                 }
                 .buttonStyle(.glassProminent) // Important pour garder le style custom
@@ -91,23 +87,20 @@ struct PawmodoroWidgetLiveActivity: Widget {
                         .foregroundStyle(.white)
                         .font(.custom("", size: 35))
                         .monospacedDigit()
+                        .dynamicIsland(verticalPlacement: .belowIfTooWide)
                 }
                 
                 DynamicIslandExpandedRegion(.bottom) {
                     // Bouton Stop
                     Button(intent: StopTimerIntent()) {
-                        HStack {
-                            Image(systemName: "stop.fill")
-                            Text("Stop timer")
-                                .fontWeight(.semibold)
-                                .padding(.vertical, 5)
-                        }
+                        Text("Stop timer")
+                            .fontWeight(.semibold)
+                            .padding(.vertical, 5)
                         .frame(maxWidth: .infinity)
                         .foregroundColor(.white)
                     }
                     .buttonStyle(.glassProminent) // Important pour garder le style custom
                     .tint(.orange)
-                    .padding(.top, 15)
                 }
                 
             } compactLeading: {
@@ -141,7 +134,7 @@ struct PawmodoroWidgetLiveActivity: Widget {
     }
 }
 
-#Preview("Dynamic Island", as: .dynamicIsland(.expanded), using: FocusAttributes(petName: "Cat", timerName: "Coffee Time", totalDuration: "30 minutes")) {
+#Preview("Dynamic Island", as: .content, using: FocusAttributes(petName: "Cat", timerName: "Coffee Time", totalDuration: "30 minutes")) {
     PawmodoroWidgetLiveActivity()
 } contentStates: {
     FocusAttributes.ContentState(endTime: Date().addingTimeInterval(1500), currentFrame: 0)

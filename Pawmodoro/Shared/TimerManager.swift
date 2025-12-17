@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ActivityKit
+import SwiftData
 
 @Observable
 class TimerManager {
@@ -30,10 +31,21 @@ class TimerManager {
     // Timer pour mettre à jour l'affichage du temps restant
     private var displayTimer: Timer?
     
+    // UserProgressManager pour récompenser l'utilisateur
+    var progressManager: UserProgressManager?
+    
+    // Date de début de la session pour calculer la durée réelle
+    private var sessionStartTime: Date?
+    
     // Singleton pour partager l'état
     static let shared = TimerManager()
     
     private init() {}
+    
+    // Configurer le progressManager depuis l'extérieur
+    func configure(with progressManager: UserProgressManager) {
+        self.progressManager = progressManager
+    }
     
     // MARK: - Méthodes pour contrôler le timer
     
@@ -41,6 +53,7 @@ class TimerManager {
         selectedMinutes = duration
         currentTimerName = timerName
         currentTimerIcon = icon
+        sessionStartTime = Date() // Enregistrer le début de la session
         
         // 1. Définir les données statiques
         // Formater la durée pour l'affichage
@@ -171,9 +184,30 @@ class TimerManager {
             
             // Vérifier si le timer est terminé
             if let remaining = self.remainingTime, remaining <= 0 {
-                self.stopActivity()
+                self.completeSession() // Appeler completeSession au lieu de stopActivity
             }
         }
+    }
+    
+    // Nouvelle méthode pour compléter une session avec succès
+    func completeSession() {
+        guard let startTime = sessionStartTime else {
+            stopActivity()
+            return
+        }
+        
+        // Calculer la durée réelle de la session
+        let actualDuration = Date().timeIntervalSince(startTime)
+        
+        // Récompenser l'utilisateur via le progressManager
+        if let progressManager = progressManager {
+            // TODO: Récupérer l'ID du pet actif si besoin
+            progressManager.completePomodoro(duration: actualDuration, petUsed: nil)
+            print("✅ Session complétée! Durée: \(Int(actualDuration))s, récompense attribuée")
+        }
+        
+        // Arrêter l'activité
+        stopActivity()
     }
     
     private func stopDisplayTimer() {

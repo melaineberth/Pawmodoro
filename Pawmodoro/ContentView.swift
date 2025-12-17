@@ -10,11 +10,11 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [UserProgress]
     
     @State private var searchText: String = ""
     @State private var expandMiniTimer: Bool = false
     @State private var timerManager: TimerManager = .shared
+    @State private var themeManager: ThemeManager = .shared
     
     @Namespace private var animation
 
@@ -25,6 +25,15 @@ struct ContentView: View {
             } else {
                 NativeTabView()
             }
+        }
+        .preferredColorScheme(themeManager.preferredColorScheme)
+        .onAppear {
+            // Configurer le TimerManager avec le UserProgressManager
+            let progressManager = UserProgressManager(modelContext: modelContext)
+            timerManager.configure(with: progressManager)
+            
+            // Initialiser le profil utilisateur (et débloquer le chat gratuit si c'est la première fois)
+            _ = progressManager.getUserProgress()
         }
     }
     
@@ -39,7 +48,6 @@ struct ContentView: View {
                 ShopView()
             }
         }
-        .tint(.orange)
     }
 }
 

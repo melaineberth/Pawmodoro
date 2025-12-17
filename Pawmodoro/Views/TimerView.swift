@@ -36,7 +36,9 @@ enum TimerType: String, CaseIterable, Identifiable {
 }
 
 struct TimerView: View {
-    @State private var pets = Pet.preview()
+    @Environment(\.modelContext) var modelContext
+    @Query private var progress: [UserProgress]
+    
     @State private var timerManager = TimerManager.shared
     @State private var lineWidth: CGFloat = 40
     @State private var selectedPet: Pet? = nil
@@ -57,15 +59,26 @@ struct TimerView: View {
     @State var startProgress: CGFloat = 0
     @State var toProgress: CGFloat = CGFloat(TimerType.pomodoro.duration) / 3600.0
     
-    @Environment(\.modelContext) var context
+    // Computed property pour obtenir les animaux possédés depuis Swift Data
+    private var ownedPets: [Pet] {
+        guard let userProgress = progress.first else { return [] }
+        
+        // Obtenir tous les animaux disponibles
+        let allPets = Pet.preview()
+        
+        // Filtrer seulement ceux possédés par l'utilisateur
+        return allPets.filter { pet in
+            userProgress.ownsPet(withID: pet.name)
+        }
+    }
 
     var body: some View {
         NavigationStack {
             List {
-                Section("Modify timer duration"){
-                    VStack(alignment: .center, spacing: 40) {
+                Section{
+                    VStack(alignment: .center, spacing: 20) {
                         
-                        // Picker pour sélectionner le type de timer (Pomodoro, Short Break, Long Break)
+                        // Picker pour sélectionner le type de timer
                         Picker("Timer Type", selection: $selectedTimerType) {
                             ForEach(TimerType.allCases) { type in
                                 Text(type.rawValue).tag(type)
@@ -73,6 +86,7 @@ struct TimerView: View {
                         }
                         .pickerStyle(.segmented)
                         .disabled(timerManager.isFocusing) // Bloquer pendant le timer
+                        .padding(.bottom, 10)
                         
                         TimerSlider()
                         
@@ -98,12 +112,6 @@ struct TimerView: View {
                     .frame(maxWidth: .infinity)
                     .padding(20)
                 }
-                
-                Section("Timer options") {
-                    Toggle("Alarme", isOn: $isEnhanced)
-                        .toggleStyle(.switch)
-                        .tint(.orange)
-                }
             }
             .navigationTitle(Text("Pawmodoro"))
             .toolbar {
@@ -113,8 +121,6 @@ struct TimerView: View {
                     } label: {
                         Image(systemName: "gear")
                     }
-                    .buttonStyle(.glassProminent)
-                    .tint(.orange)
                 }
             }
             .sheet(isPresented: $showSettingsSheet) {
@@ -141,8 +147,7 @@ struct TimerView: View {
         // Quand la position du scroll change, on met à jour l'animal sélectionné
         .onChange(of: scrollPosition) { _, newPosition in
             guard let newPosition = newPosition,
-                  let newPet = pets.first(where: { $0.id == newPosition }),
-                  newPet.isOwned else { return }
+                  let newPet = ownedPets.first(where: { $0.id == newPosition }) else { return }
             
             // Si c'est un nouvel animal, on le sélectionne avec un feedback
             if selectedPet?.id != newPosition {
@@ -155,7 +160,7 @@ struct TimerView: View {
         }
         .onAppear {
             // Sélectionner le premier animal possédé au démarrage
-            if let firstOwned = pets.first(where: { $0.isOwned }) {
+            if let firstOwned = ownedPets.first {
                 selectedPet = firstOwned
                 scrollPosition = firstOwned.id
             }
@@ -175,7 +180,7 @@ struct TimerView: View {
                // MARK: Animal Slider Design - Sélection automatique basée sur le scroll !
                ScrollView(.horizontal) {
                    HStack(spacing: 0) {
-                       ForEach(pets.filter { $0.isOwned }) { pet in
+                       ForEach(ownedPets) { pet in
                            PetSelectionCard(
                                pet: pet,
                                isSelected: selectedPet?.id == pet.id
@@ -250,7 +255,6 @@ struct TimerView: View {
         guard let selectedPet = selectedPet else {
             return false
         }
-        let ownedPets = pets.filter { $0.isOwned }
         guard let currentIndex = ownedPets.firstIndex(where: { $0.id == selectedPet.id }) else {
             return false
         }
@@ -262,7 +266,6 @@ struct TimerView: View {
         guard let selectedPet = selectedPet else {
             return false
         }
-        let ownedPets = pets.filter { $0.isOwned }
         guard let currentIndex = ownedPets.firstIndex(where: { $0.id == selectedPet.id }) else {
             return false
         }
@@ -323,7 +326,7 @@ struct TimerView: View {
         let snappedSeconds = round(totalSeconds / 5.0) * 5.0
         
         // S'assurer qu'on a au minimum 5 secondes
-        return max(5, Int(snappedSeconds))
+        return Int(snappedSeconds)
     }
     
     func getTimeDifference() -> Int {

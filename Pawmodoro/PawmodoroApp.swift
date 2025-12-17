@@ -13,6 +13,8 @@ struct PawmodoroApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             UserProgress.self,
+            PetData.self,
+            PomodoroSession.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

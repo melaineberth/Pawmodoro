@@ -6,21 +6,42 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SettingsView: View {
     @State private var isEnhanced: Bool = true
-    @State private var themeMode: ThemeMode = .auto
+    @State private var themeManager: ThemeManager = .shared
+    
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
-    enum ThemeMode: String, CaseIterable, Identifiable {
-        case auto, light, dark
-        var id: Self { self }
+    @Query private var progress: [UserProgress]
+    
+    private var userProgress: UserProgress? {
+        progress.first
     }
     
     var body: some View {
         NavigationStack {
             List {
+                Section("Stats"){
+                    // Pomodoros complétés
+                    StatCard(
+                        title: "Pomodoros completed",
+                        value: "\(userProgress?.totalPomodorosCompleted ?? 0)",
+                        icon: "checkmark.circle.fill",
+                        color: .green
+                    )
+                    
+                    StatCard(
+                        title: "Current series",
+                        value: "\(userProgress?.currentStreak ?? 0)",
+                        icon: "flame.fill",
+                        color: .orange
+                    )
+                }
+                
                 Section("General") {
                     NavigationLink("Leave Feedback") {
                         
@@ -28,14 +49,18 @@ struct SettingsView: View {
                 }
                 
                 Section {
+                    Toggle("Alarme", isOn: $isEnhanced)
+                        .toggleStyle(.switch)
+                        .tint(.orange)
+                    
                     Toggle("Push Notifications", isOn: $isEnhanced)
                         .toggleStyle(.switch)
                         .tint(.orange)
                     
-                    Picker("Theme Mode", selection: $themeMode) {
-                        Text("Auto").tag(ThemeMode.auto)
-                        Text("Light").tag(ThemeMode.light)
-                        Text("Dark").tag(ThemeMode.dark)
+                    Picker("Theme Mode", selection: $themeManager.themeMode) {
+                        ForEach(ThemeManager.ThemeMode.allCases) { mode in
+                            Text(mode.displayName).tag(mode)
+                        }
                     }
                     
                     NavigationLink("FAQ") {
@@ -56,27 +81,43 @@ struct SettingsView: View {
             .navigationTitle(Text("Settings"))
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(role: .cancel) {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
                         dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
                     }
                 }
             }
         }
-        .preferredColorScheme(preferredColorScheme)
-    }
-    
-    private var preferredColorScheme: ColorScheme? {
-        switch themeMode {
-        case .auto:
-            return nil
-        case .light:
-            return .light
-        case .dark:
-            return .dark
-        }
     }
 }
+
+struct StatCard: View {
+    let title: String
+    let value: String
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.system(size: 40))
+                .foregroundStyle(color)
+            
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Text(value)
+                    .font(.title2)
+                    .fontWeight(.bold)
+            }
+        }
+        .padding(.vertical, 8)
+    }
+}
+
 
 #Preview {
     SettingsView()

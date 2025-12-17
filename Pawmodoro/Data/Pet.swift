@@ -25,13 +25,14 @@ struct Pet: Identifiable, Hashable {
     
     static func preview() -> [Pet] {
         [
-            Pet(name: "Cat", image: "cat_idle", isOwned: true, price: 0, category: .classic), // Gratuit par défaut
-            Pet(name: "Owl", image: "owl_idle", isOwned: true, price: 100, category: .classic),
+            Pet(name: "Cat", image: "cat_idle", isOwned: true, price: 0, category: .classic), // Gratuit, donné automatiquement au démarrage
+            Pet(name: "Owl", image: "owl_idle", isOwned: false, price: 100, category: .classic),
             Pet(name: "Penguin", image: "penguin_idle", isOwned: false, price: 150, category: .classic),
             Pet(name: "Lazybones", image: "lazybones_idle", isOwned: false, price: 200, category: .classic),
             Pet(name: "Rabbit", image: "rabbit_idle", isOwned: false, price: 250, category: .classic),
-            Pet(name: "Bird", image: "cat_idle", isOwned: false, price: 300, category: .classic),
-            Pet(name: "Bird", image: "cat_idle", isOwned: false, price: 350, category: .classic),
+            Pet(name: "Fox", image: "fox_idle", isOwned: false, price: 300, category: .classic),
+            Pet(name: "Castor", image: "castor_anim", isOwned: false, price: 300, category: .classic),
+            Pet(name: "Raccoon", image: "raccoon_idle", isOwned: false, price: 350, category: .classic),
             Pet(name: "Capybara", image: "capybara_idle", isOwned: false, price: 500, category: .classic)
         ]
     }
