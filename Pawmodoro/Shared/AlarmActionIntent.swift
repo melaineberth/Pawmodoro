@@ -8,7 +8,7 @@
 import AppIntents
 import ActivityKit
 
-struct StopTimerIntent: LiveActivityIntent {
+struct AlarmActionIntent: LiveActivityIntent {
     static var title: LocalizedStringResource = "Arrêter le timer"
     static var description: IntentDescription = IntentDescription("Arrête le timer en cours")
     
